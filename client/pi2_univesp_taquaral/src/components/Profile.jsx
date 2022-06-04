@@ -4,14 +4,15 @@ import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios'
 
-
 function Profile() {
+
+    console.log('[Client] Profile.jsp')
 
     const navigate = useNavigate();
 
     const location = useLocation();
     //util para verificar a chegada dos dados
-    // console.log('location', location.state.email);
+    console.log('location', location.state.email);
 
     //capitação dos valores do formulário
     const [values, setState] = useState('')
@@ -30,14 +31,15 @@ function Profile() {
     //função criadora do elemento html
         const Dados = () => { 
         
-        const CNPJ = values.idCNPJ;
-        const email = values.idEmail;
-        const nomeDoResponsavel = values.idNomeDoResponsavel;
-        const razaoSocial = values.idRazaoSocial;
-        const senha = values.idSenha;
+        const CNPJ = values.cnpj;
+        const email = values.resp_email;
+        const nomeDoResponsavel = values.resp_nome;
+        const razaoSocial = values.razao_Social;
+        const senha = values.senha;
+        const telefone = values.resp_telefone;
         
         const userInformation = [
-            email, CNPJ, nomeDoResponsavel, razaoSocial, senha
+            email, CNPJ, nomeDoResponsavel, razaoSocial, senha, telefone
         ]
 
 
@@ -50,12 +52,12 @@ function Profile() {
         };
 
         //const para exibir nome do usuario
-        const Responsavel = () => values.idNomeDoResponsavel
+        const Responsavel = () => values.resp_nome
 
         //func para deletar cadastro
         const DeletarCadastro =  () => {
             Axios.delete("http://localhost:3001/delete", { 
-                data:{ id: values.idCNPJ }
+                data:{ id: values.cnpj }
             }).then(navigate("/", {})) 
         };
             

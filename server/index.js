@@ -1,20 +1,34 @@
 const express = require("express");
 const app = express();
-const mysql = require("mysql");
+const md5 = require("md5");
+
+//Variáveis de ambiente para o modeo desenvolvedor
+console.log("Servidor modo =>", process.env.NODE_ENV);
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 //ainda não usados
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-
-//conexao com o banco de dados
-const db = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "univesp",
-    database: "registrosEcoPontos"
+//conexão com o PostgreSQL
+//|-> Exemplo de String de conexão: postgresql://user:secret@localhost
+//'-> Formato da String: postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
+console.log("PGSql String =>", process.env.PG_CONNECTION_STRING);
+const { Pool } = require('pg');
+const pool = new Pool({
+	//connectionString: process.env.PG_CONNECTION_STRING, ssl: { rejectUnauthorized: false }
+  connectionString: process.env.PG_CONNECTION_STRING
+});
+// Testando a conexão com o banco de dados.
+pool.query("SELECT CURRENT_TIMESTAMP", (err, res) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(res.rows[0])
+  }
 })
-
 
 //permissoes para cors para solucionar problemas com localhost, etc. 
 app.use((req, res, next) => {
@@ -31,46 +45,56 @@ app.use((req, res, next) => {
 app.use(express.json())
 
 
-
-
 //tratamento de request de registro
 app.post("/register", (req, res) => {
+
+  console.log("POST /register");
+
     const { formCorporateName } = req.body
-    const  { formUserName } = req.body
-    const { formEmail } = req.body
-    const { formPassword } = req.body
     const { formCNPJ } = req.body
-    
-    let SQL = `INSERT INTO empresasRegistradas (\
-idCNPJ, idRazaoSocial, idNomeDoResponsavel, idEmail, idSenha) VALUES (\
-'${formCNPJ}', '${formCorporateName}', '${formUserName}', '${formEmail}', '${formPassword}');` 
+    const { formPassword } = req.body
+    const  { formUserName } = req.body
+    const { formTelefone } = req.body
+    const { formEmail } = req.body
+
+    let SQL = `INSERT INTO empresa (\
+razao_social, cnpj, senha, resp_nome, resp_telefone, resp_email) VALUES (\
+  '${formCorporateName}', '${formCNPJ}', md5('${formPassword}'), '${formUserName}', '${formTelefone}', '${formEmail}');` 
             
-    db.query(SQL, (err, result) => {
-        console.log(err)
+    pool.query(SQL, (err, result) => {
+	    if (err) {
+        console.log(err);
+        }
     })
+
 });
 
 
 
 //tratamento de request de login
 app.post("/login", (req, res) => {
+
+  console.log("POST /login")
+
     const email = req.body.email;
-    const password = req.body.password;
+    const password = md5(req.body.password);
 
-    db.query("SELECT * FROM empresasRegistradas WHERE idEmail = ?", [email], (err, result) => {
-      if (err) {
+    //console.log(email, " - ", password);
+    let SQL = `SELECT * FROM empresa WHERE resp_email = '${email}';`;
+    //console.log(SQL);
+
+    pool.query(SQL, (err, result) => {
+	    if (err) {
+			  console.error(err);
         res.send(err);
+	    }
+      //console.log(result.rows[0].senha);
+      if (result.rowCount === 1) {
+          if (password === result.rows[0].senha) {
+              res.send({ msg: "Usuário logado. Bem vindo!", isAuthenticated: true })
+          } else {res.send({ msg: "Senha incorreta" })}
       }
-    if (result.length > 0) {
-        if (password === result[0].idSenha) {
-            res.send({ msg: "Usuário logado. Bem vindo!", isAuthenticated: true })
-
-            
-          
-
-        } else {res.send({ msg: "Senha incorreta" })}
-    }
-      else {res.send({ msg: "Usuário inexistente"})}
+        else {res.send({ msg: "Usuário inexistente"})}
     }
 )
 });
@@ -79,26 +103,28 @@ app.post("/login", (req, res) => {
 //Exibição de dados no perfil
 app.post("/profile", (req, res) => {
 
-    const email = req.body.email;
+  console.log("POST /profile =>", req.body.email)
 
-  db.query("SELECT * FROM empresasRegistradas WHERE idEmail =?", [email], (err, result) => {
+  const email = req.body.email;
 
-      res.send(result)
+  pool.query(`SELECT * FROM empresa WHERE resp_email = '${email}';`, (err, result) => {
+      console.log(result);
+      res.send(result);
 
   })
 })
 
 //Deletar dados do db
 app.delete("/delete", (req, res) => {
-  db.query(
-    "DELETE FROM empresasRegistradas WHERE idCNPJ =?", [req.body.id], (err, result) => {
+
+  console.log("DELETE /delete")
+
+  pool.query(
+    "DELETE FROM empresa WHERE cnpj =?", [req.body.id], (err, result) => {
       if(err) {res.send({msg: err})}
     }
   )
 })
 
-
-
-
-
-app.listen(3001);
+console.log("Porta =>", process.env.PORT)
+app.listen(process.env.PORT);

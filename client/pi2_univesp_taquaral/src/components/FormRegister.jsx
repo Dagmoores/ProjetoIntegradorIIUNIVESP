@@ -31,7 +31,8 @@ const handleClickButton = () => {
     formCorporateName: values.formCorporateName,    
     formUserName: values.formUserName,
     formEmail: values.formEmail,
-    formPassword: values.formPassword
+    formPassword: values.formPassword,
+    formTelefone: values.formTelefone,
     })
 }
 
@@ -74,6 +75,13 @@ return (
             onChange = {handleChangeValues}
             />
             </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formTelefone">
+            <Form.Label>Telefone</Form.Label>
+            <Form.Control type="text" placeholder="Insira telefone do resposnável" 
+            onChange = {handleChangeValues}
+            />
+            </Form.Group>            
 
             <Form.Group className="mb-3" controlId="formPassword">
             <Form.Label>Senha</Form.Label>

@@ -12,8 +12,6 @@ import Profile from './pages/Profile'
 
 
 function AppRoutes() {
-
-
     return (
         <BrowserRouter>
             <Routes>
@@ -21,7 +19,6 @@ function AppRoutes() {
                 <Route path="/cadastro" element={<Cadastro />} /> 
                 <Route path="/sobre" element={<Sobre />} /> 
                 <Route path="/contato" element={<Contato />} /> 
-
                 <Route path="/profile" element={<Profile />} />
             </Routes>
         </BrowserRouter>

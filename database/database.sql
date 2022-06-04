@@ -25,7 +25,7 @@ CREATE TABLE public.empresa
     id serial NOT NULL,
     razao_social character varying(100) NOT NULL,
     cnpj numeric(14) NOT NULL,
-    senha character varying(20) NOT NULL,
+    senha character varying(32) NOT NULL,
     resp_nome character varying(100) NOT NULL,
     resp_telefone character varying(15) NOT NULL,
     resp_email character varying(100) NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE public.blog_editor
     id serial NOT NULL,
     nome character varying(100) NOT NULL,
     login character varying(25) NOT NULL,
-    senha character varying(20),
+    senha character varying(32),
     PRIMARY KEY (id),
     UNIQUE (login)
 )
