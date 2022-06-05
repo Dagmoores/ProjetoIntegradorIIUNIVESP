@@ -15,21 +15,7 @@ function paginaInicial() {
     return (
 
 <div>
-
-
-    <header>
-        <nav>
-            <ul>
-                <li><Link to="/">Home</Link></li>
-                <li><Link to="/sobre">Sobre</Link></li>
-                <li><Link to="/contato">Contato</Link></li>
-                <li><Link to="/cadastro">Cadastro/Login</Link></li>
-            </ul>
-        </nav>
-    </header>
-
-    
-
+  
     <div className="containerPrincipal">
         <div className="componentCadastro">
 
