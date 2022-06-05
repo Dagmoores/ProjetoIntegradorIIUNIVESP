@@ -22,7 +22,7 @@ function Profile() {
             Axios.post("http://localhost:3001/profile", {
                 email: location.state.email
             }).then( 
-                response => setState(response.data[0])
+                response => setState(response.data)
             )
         }, []);
 
@@ -34,7 +34,7 @@ function Profile() {
         const CNPJ = values.cnpj;
         const email = values.resp_email;
         const nomeDoResponsavel = values.resp_nome;
-        const razaoSocial = values.razao_Social;
+        const razaoSocial = values.razao_social;
         const senha = values.senha;
         const telefone = values.resp_telefone;
         

@@ -108,23 +108,24 @@ app.post("/profile", (req, res) => {
   const email = req.body.email;
 
   pool.query(`SELECT * FROM empresa WHERE resp_email = '${email}';`, (err, result) => {
-      console.log(result);
-      res.send(result);
-
+      console.log(result.rows[0]);
+      res.send(result.rows[0]);
   })
 })
 
 //Deletar dados do db
 app.delete("/delete", (req, res) => {
 
-  console.log("DELETE /delete")
-
+  console.log("DELETE /delete");
+  cnpj = req.body.id;
+  let SQL = `DELETE FROM empresa WHERE cnpj = ${cnpj};`; 
+  console.log(SQL);
   pool.query(
-    "DELETE FROM empresa WHERE cnpj =?", [req.body.id], (err, result) => {
+    SQL, (err, result) => {
       if(err) {res.send({msg: err})}
     }
   )
 })
 
-console.log("Porta =>", process.env.PORT)
+console.log("Porta =>", process.env.PORT);
 app.listen(process.env.PORT);
